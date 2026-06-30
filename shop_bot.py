@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+﻿# -*- coding: utf-8 -*-
 import asyncio
 import json
 import os
@@ -98,7 +98,7 @@ def products_kb(cat_id):
     buttons = []
     for prod_id, prod in products.items():
         count = len(prod.get("credentials", []))
-        text = f"{prod['name']} — {prod['price']} руб. [{count} шт.]"
+        text = f"{prod['name']} - {prod['price']} руб. [{count} шт.]"
         buttons.append([InlineKeyboardButton(text=text, callback_data=f"product_{cat_id}_{prod_id}")])
     buttons.append([InlineKeyboardButton(text="◀️ Назад", callback_data="catalog")])
     return InlineKeyboardMarkup(inline_keyboard=buttons)
@@ -227,7 +227,7 @@ async def reject_topup(callback: types.CallbackQuery, bot: Bot):
         return
     order["status"] = "rejected"
     save_db(db)
-    await bot.send_message(order["user_id"], "❌ Пополнение отклонено. Если уверен что оплатил — обратись в поддержку.")
+    await bot.send_message(order["user_id"], "❌ Пополнение отклонено. Если уверен что оплатил - обратись в поддержку.")
     await callback.message.edit_caption(caption=callback.message.caption + "\n\n❌ Отклонено")
     await callback.answer("❌ Отклонено")
 
@@ -306,7 +306,7 @@ async def buy_product(callback: types.CallbackQuery, bot: Bot):
         f"✅ Покупка успешна!\n\n🛒 Товар: {prod['name']}\n\n🔑 Ваши данные:\n{credential}\n\n💰 Остаток баланса: {user['balance']} руб.",
         reply_markup=main_menu_kb()
     )
-    await bot.send_message(ADMIN_ID, f"🛒 Продажа #{order_id}\nПользователь: @{callback.from_user.username or '-'}\nТовар: {prod['name']} — {prod['price']} руб.")
+    await bot.send_message(ADMIN_ID, f"🛒 Продажа #{order_id}\nПользователь: @{callback.from_user.username or '-'}\nТовар: {prod['name']} - {prod['price']} руб.")
 
 @dp.callback_query(F.data == "my_orders")
 async def my_orders(callback: types.CallbackQuery):
@@ -317,7 +317,7 @@ async def my_orders(callback: types.CallbackQuery):
         return
     text = "📦 Твои заказы:\n\n"
     for i, o in enumerate(orders[-10:], 1):
-        text += f"{i}. {o['prod_name']} — {o['price']} руб. ✅\n"
+        text += f"{i}. {o['prod_name']} - {o['price']} руб. ✅\n"
     await callback.message.edit_text(text, reply_markup=back_kb("back_main"))
 
 @dp.callback_query(F.data == "about")
@@ -391,7 +391,7 @@ async def save_product_price(message: types.Message, state: FSMContext):
         return
     await state.update_data(prod_price=price)
     await state.set_state(AdminStates.add_product_credentials)
-    await message.answer("🔑 Введи данные товара (логин:пароль или ключ).\nМожно несколько — каждый с новой строки:")
+    await message.answer("🔑 Введи данные товара (логин:пароль или ключ).\nМожно несколько - каждый с новой строки:")
 
 @dp.message(AdminStates.add_product_credentials)
 async def save_product_credentials(message: types.Message, state: FSMContext):
@@ -438,7 +438,7 @@ async def admin_del_product(callback: types.CallbackQuery):
     buttons = []
     for cid, cat in db["categories"].items():
         for pid, prod in cat.get("products", {}).items():
-            buttons.append([InlineKeyboardButton(text=f"🗑️ {cat['name']} — {prod['name']}", callback_data=f"delprod_{cid}_{pid}")])
+            buttons.append([InlineKeyboardButton(text=f"🗑️ {cat['name']} - {prod['name']}", callback_data=f"delprod_{cid}_{pid}")])
     buttons.append([InlineKeyboardButton(text="◀️ Назад", callback_data="admin_panel")])
     await callback.message.edit_text("🗑️ Выбери товар для удаления:", reply_markup=InlineKeyboardMarkup(inline_keyboard=buttons))
 
@@ -524,7 +524,7 @@ async def admin_users(callback: types.CallbackQuery):
     text = "👥 Пользователи:\n\n"
     for uid, u in list(users.items())[-20:]:
         uname = f"@{u['username']}" if u.get("username") else f"ID: {uid}"
-        text += f"{uname} — {u['balance']} руб.\n"
+        text += f"{uname} - {u['balance']} руб.\n"
     await callback.message.edit_text(text, reply_markup=back_kb("admin_panel"))
 
 @dp.callback_query(F.data == "admin_stats")
